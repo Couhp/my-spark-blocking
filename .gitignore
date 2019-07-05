@@ -1,0 +1,15 @@
+# environment
+.env
+
+# test
+src/test
+
+# data
+data
+
+#cache
+*.cache
+*.class
+
+# IDE configuration
+.idea
