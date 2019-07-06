@@ -2,7 +2,7 @@
 .env
 
 # test
-src/test
+/src/test
 
 # data
 data

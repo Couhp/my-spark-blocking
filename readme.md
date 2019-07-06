@@ -4,12 +4,12 @@
 
 Tasks:
 
--[ ] Read RDF data from local file 
+-[x] Read RDF data from local file 
  
--[ ] Job 1: Attribute Creation
+-[x] Job 1: Attribute Creation
 
--[ ] Job 2: Attribute Similarities
+-[] Job 2: Attribute Similarities
 
--[ ] Job 3: Best Match
+-[] Job 3: Best Match
 
--[ ] Job 4: Final Clustering and Blocking
+-[] Job 4: Final Clustering and Blocking
