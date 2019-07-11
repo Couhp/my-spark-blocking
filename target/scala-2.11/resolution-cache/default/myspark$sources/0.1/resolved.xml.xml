@@ -4,7 +4,7 @@
 		module="myspark$sources"
 		revision="0.1"
 		status="integration"
-		publication="20190706090845"
+		publication="20190711104208"
 	/>
 	<configurations>
 		<conf name="compile" visibility="public" description=""/>

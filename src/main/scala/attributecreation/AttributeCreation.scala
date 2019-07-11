@@ -1,11 +1,12 @@
 package attributecreation
 
+import org.apache.spark.rdd.RDD
 import org.apache.spark.{SparkConf, SparkContext}
-import config.Environment.sparkMaster
+//import config.Environment.sparkMaster
 import rdf.RDFReader.entityCollection
 
 object AttributeCreation {
-  def main(args: Array[String]) {
+  def mapReduce(): RDD[(String, String)] = {
     // Create a Scala Spark Context.
     val conf = new SparkConf().setAppName("attribute-creation").setMaster("local[2]")
     val sc = new SparkContext(conf)
@@ -17,8 +18,12 @@ object AttributeCreation {
     val concatenationEntities = input.map(entity => (entity(0), entity(1)))
                                      .reduceByKey{(x, y) => x + " " + y}
 
-//    val outputFile = "output"
-    var all = concatenationEntities.collect()
-    println(all.deep.mkString("\n"))
+    return concatenationEntities
+  }
+
+  def main(args: Array[String]): Unit = {
+    val result = mapReduce()
+    println(result.collect().deep.mkString("\n"))
+
   }
 }

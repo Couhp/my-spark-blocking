@@ -13,3 +13,18 @@ Tasks:
 - [ ] Job 3: Best Match
 
 - [ ] Job 4: Final Clustering and Blocking
+
+----
+
+### Steps
+
+**Data Preparation**
+- Prepare 2 dataset (LOCAH and BPPedia)
+- Convert link into text predicate (Using regexp. For example "<http://xmlns.com/foaf/0.1/givenname>" => "givenname")
+- Give 3triple into format (datasetId;;;predicate;;;object) (datasetId: (0,1), predicate: text, object: text)
+
+**Job-1: Attribute Creation**
+- Get data from preparetation step, convert into RDD
+- Map phase: convert data into RDD format (key: dId-predicate, value: object)
+- Reduce phase: Concatnation all object by key, return RDD (Key: dId-predicate, value: concatnated object)
+
