@@ -25,6 +25,14 @@ Tasks:
 
 **Job-1: Attribute Creation**
 - Get data from preparetation step, convert into RDD
-- Map phase: convert data into RDD format (key: dId-predicate, value: object)
-- Reduce phase: Concatnation all object by key, return RDD (Key: dId-predicate, value: concatnated object)
+- Map phase: convert data into RDD format `(key: dId-predicate, value: object)` (dId: (0,1), predicate: Strng, object: String)
+- Reduce phase: Concatnation all object by key, get all trigram, return RDD `(Key: dId-predicate, value: Set(trigram: String))`
+
+Ex
+- [1] (0-event, Set(ath, tho, hor,...))
+- [2] (1-events, Set(ath, tho, ohr,...))
+- ...
+
+
+
 
