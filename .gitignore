@@ -13,3 +13,5 @@ data
 
 # IDE configuration
 .idea
+project/target
+target/

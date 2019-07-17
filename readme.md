@@ -8,7 +8,7 @@ Tasks:
  
 - [x] Job 1: Attribute Creation
 
-- [ ] Job 2: Attribute Similarities
+- [x] Job 2: Attribute Similarities
 
 - [ ] Job 3: Best Match
 
@@ -33,6 +33,18 @@ Ex
 - [2] (1-events, Set(ath, tho, ohr,...))
 - ...
 
+**Job-2: Attribute Similarity**
+- Get RDD from previous step
+- Use `flatmap()` to create multiple pairs for per map worker(Spark dont have Mapper-id purely, so i used partition-id).
+    
+    Example: we assume that 3 partition at all. 
+    So partition 1 will create 3 pairs with keys [1-1, 1-2, 1-3].
 
-
+- Use join by key to create pairs per Mapper. 
+    
+    Example: for key [1-1] we have value (a), (b), (c).
+    This step return ([1-1], ((a), (b))), ([1-1], ((b), (c))), ([1-1], ((a), (c))) (~Reduce phase in Hadoop)
+- Compare similarity.
+    Example: ([1-1], ((name, Set(aaa, bbb, ccc)), (givenname, Set(aaa, bbb, ddd))))   
+    Similarity = (name, (givenname, 0.5))
 

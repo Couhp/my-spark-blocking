@@ -6,7 +6,7 @@ object RDFReader {
 
     def read(datasetPath: String): List[List[String]] = {
         val lines = Source.fromFile(datasetPath).getLines.toList
-        val data: List[String] = lines.slice(1, 240)
+        val data: List[String] = lines.slice(1, 100)
 
         val entityCollection = data.map(e => new Entity(e))
           .filter(_.isAvailable)
