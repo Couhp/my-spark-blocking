@@ -21,7 +21,8 @@ Tasks:
 **Data Preparation**
 - Prepare 2 dataset (LOCAH and BPPedia)
 - Convert link into text predicate (Using regexp. For example "<http://xmlns.com/foaf/0.1/givenname>" => "givenname")
-- Give 3triple into format (datasetId;;;predicate;;;object) (datasetId: (0,1), predicate: text, object: text)
+- Give 3triple into format (datasetI-predicate, object) (datasetId: (0,1), predicate: text, object: text)
+    Example: (1givenname, abla necroman)
 
 **Job-1: Attribute Creation**
 - Get data from preparetation step, convert into RDD
