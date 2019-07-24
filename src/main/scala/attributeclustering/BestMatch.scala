@@ -4,7 +4,7 @@ import org.apache.spark.rdd.RDD
 
 object BestMatch {
 
-  def run(): Unit = {
+  def run(): RDD[(String, String)] = {
     val similarityValues: RDD[(String, (String, Float))] = AttributeSimilarities.run()
 
     val inversedSimilarityValues = similarityValues.flatMap({
@@ -12,13 +12,14 @@ object BestMatch {
                                                    (key, (another_key, similarity)))
     })
 //    inversedSimilarityValues.collect().foreach(println)
-    val MinimumSimThreshold = 0.0
-    val maximum = inversedSimilarityValues.reduceByKey({case(v1,v2) =>
+    val MinimumSimThreshold = 0.05
+    val maximumAttributeMatch: RDD[(String, String)] = inversedSimilarityValues.reduceByKey({case(v1,v2) =>
       if (v1._2 > v2._2) {v1}
       else v2
-    }).filter({case(k, v) => v._2 > MinimumSimThreshold})
+    }).filter({case(k, v) => v._2 > MinimumSimThreshold
+    }).map({case(k, v) => (k, v._1)})
 
-    maximum.collect().foreach(println)
+    maximumAttributeMatch//.collect().foreach(println)
 
   }
 

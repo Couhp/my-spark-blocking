@@ -48,13 +48,12 @@ object AttributeSimilarities {
     val numberPartitions: Int = trigramEntities.partitions.length
 
     val valueByMapperId: RDD[(String, (String, Set[String]))] = trigramEntities
-        .flatMap { case (key, value) => {
-        val ctx = TaskContext.get
-        //val stageId = ctx.stageId
-        val partId = ctx.partitionId
-        getMapperJoinById(partId, numberPartitions, key, value)
-      }
-    }
+        .flatMap { case (key, value) =>
+          val ctx = TaskContext.get
+          //val stageId = ctx.stageId
+          val partId = ctx.partitionId
+          getMapperJoinById(partId, numberPartitions, key, value)
+        }
     /* Joined value together\
      * For per key now have:
      *   (key) - ((pre1, set1), (pre2, set2))
