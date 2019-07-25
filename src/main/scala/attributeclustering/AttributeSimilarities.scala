@@ -6,7 +6,8 @@ import org.apache.spark.rdd.RDD
 object AttributeSimilarities {
 
   def getMapperJoinById(currentId: Int, totalMapper: Int, key: String, value: Set[String]): TraversableOnce[(String, (String, Set[String]))] = {
-    // Convert to (mapperID, a copy of the input)
+    /**
+      *  Convert to (mapperID, a copy of the input) */
     val result = (0 until totalMapper).map(id => {
       if (id < currentId) {
         (id.toString + "_" + currentId.toString, (key, value))
@@ -22,8 +23,6 @@ object AttributeSimilarities {
 
     val union = (set1 | set2).size
     val intersect = (set1 & set2).size
-//    println(set1, set2)
-//    println(union, intersect)
     if (union != 0) intersect.toFloat/union else 0
   }
 
@@ -63,7 +62,7 @@ object AttributeSimilarities {
 
     val similarityValues: RDD[(String, (String, Float))] = joined.map({
       case (key, (v1, v2)) => (v1._1, (v2._1, jaccardSimilarity(v1._2, v2._2)))
-    })//.collect().foreach(println)
+    })
 
     similarityValues
   }

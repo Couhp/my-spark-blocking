@@ -12,7 +12,7 @@ object Util {
     List(-1)
   }
 
-  def clusterMapping(maximumAttributeMatch: List[(String, String)]): List[Set[String]] = {
+  def clusterMapping(maximumAttributeMatch: List[(String, String)]): Map[String, String] = {
     // Get clusters for all atribute match pairs
     var clusters: List[Set[String]] = List()
 
@@ -39,7 +39,13 @@ object Util {
       }
     }
 
-    clusters
+    var result: Map[String, String] = Map()
+    for ((cluster, index) <- clusters.view.zipWithIndex) {
+      for(element <- cluster) {
+        result += (element -> index.toString)
+      }
+    }
+    result
   }
 
   def main(args: Array[String]): Unit = {
@@ -51,7 +57,7 @@ object Util {
                        ("b", "d"),
                        ("x", "m"))
 
-    val result: List[Set[String]] = clusterMapping(example)
+    val result = clusterMapping(example)
     result.foreach(println)
   }
 }
