@@ -9,7 +9,8 @@ object Util {
 
   def getNtripleObject(stringInput: String): List[String] = {
     val nTripleSpliter = stringInput.split(" ")
-    return List(nTripleSpliter(1), nTripleSpliter.takeRight(nTripleSpliter.size - 2).mkString(" "))
+
+    List(nTripleSpliter(0), nTripleSpliter(1), nTripleSpliter.takeRight(nTripleSpliter.size - 2).mkString(" "))
   }
 
   def isLinkEntity(stringInput: String): Boolean = {
@@ -23,7 +24,7 @@ object Util {
     val entity = stringInput.split("[/#:]").last
 
     if (stringInput(0) == '<') {
-      return entity.slice(0, entity.size - 1)
+      return entity.slice(0, entity.length - 1)
     }
     entity
   }

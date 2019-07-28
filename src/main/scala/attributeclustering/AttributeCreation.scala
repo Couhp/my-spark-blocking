@@ -9,8 +9,8 @@ import config.Environment.{rdfDataset1, rdfDataset2}
 
 
 object AttributeCreation {
-  val sc = SparkConfig.spark
-  var concatenationEntities: RDD[(String, String)] = sc.emptyRDD
+  val sc = SparkConfig.sparkConf
+  var concatenationEntities: RDD[(String, (String, String))] = sc.emptyRDD
 
   private def getTrigram(text: String): Set[String] = {
     text.sliding(3).map(p => p.toList.mkString("")).toList.toSet
@@ -18,8 +18,8 @@ object AttributeCreation {
 
   def run(): RDD[(String, Set[String])] = {
     // Load input data from RDF local
-    val dataset1 =  sc.parallelize(read(rdfDataset1).slice(1,5000))
-    val dataset2 =  sc.parallelize(read(rdfDataset2).slice(5000, 12000))
+    val dataset1 =  sc.parallelize(read(rdfDataset1))
+    val dataset2 =  sc.parallelize(read(rdfDataset2))
     /** Transform into word and count.
       * - Map: (key)predicate attribute: (value)object
       * - Reduce: concatnation value by key, get trigram
@@ -28,8 +28,9 @@ object AttributeCreation {
 
     val dataset2Entity: RDD[(String, String)] = dataset2.map(entity => ("1" + entity.head.toString, entity(1)))
 
-    concatenationEntities = dataset1Entity ++ dataset2Entity
-    val trigramEntities = concatenationEntities.reduceByKey{(x, y) => x + " " + y}
+    concatenationEntities = dataset1.map(entity => ("0" + entity(2), ("0" + entity(0), entity(1)))) ++
+                            dataset2.map(entity => ("1" + entity(2), ("1" + entity(0), entity(1))))
+    val trigramEntities = (dataset1Entity ++ dataset2Entity).reduceByKey{(x, y) => x + " " + y}
                                                .mapValues(value => getTrigram(value))
 
     trigramEntities

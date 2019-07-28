@@ -1,6 +1,12 @@
 package attributeclustering
 
+import org.apache.spark.rdd.RDD
+
 object Util {
+
+  def printrdd(rdd: RDD[Unit]): Unit ={
+    rdd.collect.foreach(println)
+  }
 
   private def getIndex(clusters: List[Set[String]], element1: String, element2: String): List[Int] = {
 
@@ -12,7 +18,7 @@ object Util {
     List(-1)
   }
 
-  def clusterMapping(maximumAttributeMatch: List[(String, String)]): Map[String, String] = {
+  def clusterListMapping(maximumAttributeMatch: List[(String, String)]): List[Set[String]] ={
     // Get clusters for all atribute match pairs
     var clusters: List[Set[String]] = List()
 
@@ -27,9 +33,9 @@ object Util {
       }
       else if(clusterIndexs.size > 1){
         val newMergedCluster = clusters(clusterIndexs.head) union
-                               clusters(clusterIndexs(1))
+          clusters(clusterIndexs(1))
         clusters = clusters.indices.filter(!clusterIndexs.contains(_))
-                                       .map(i => clusters(i)).toList
+          .map(i => clusters(i)).toList
         clusters = clusters :+ newMergedCluster
       }
       else {
@@ -38,6 +44,12 @@ object Util {
         clusters = clusters.updated(clusterIndex, clusters(clusterIndex) + element1)
       }
     }
+
+    clusters
+  }
+
+  def clusterMapping(maximumAttributeMatch: List[(String, String)]): Map[String, String] = {
+    val clusters = clusterListMapping(maximumAttributeMatch)
 
     var result: Map[String, String] = Map()
     for ((cluster, index) <- clusters.view.zipWithIndex) {
@@ -48,14 +60,31 @@ object Util {
     result
   }
 
+  def clusterMappingByEntity(maximumAttributeMatch: List[(String, String)]): Map[String, String] = {
+    val clusters = clusterListMapping(maximumAttributeMatch)
+
+    var result: Map[String, String] = Map()
+    for ((cluster, index) <- clusters.view.zipWithIndex) {
+      for(element <- cluster) {
+        val oldVal = result getOrElse (index.toString, "")
+        val newVal = if (oldVal != "") element + "," + oldVal else
+                                       element
+        result += (index.toString -> newVal)
+      }
+    }
+    result
+  }
+
+
+
   def main(args: Array[String]): Unit = {
-    val example = List(("a", "b"),
-                       ("b", "c"),
-                       ("x", "f"),
-                       ("g", "h"),
-                       ("g", "k"),
-                       ("b", "d"),
-                       ("x", "m"))
+    val example = List(("1a", "1b"),
+                       ("1b", "1c"),
+                       ("1x", "1f"),
+                       ("1g", "1h"),
+                       ("1g", "1k"),
+                       ("1b", "1d"),
+                       ("1x", "1m"))
 
     val result = clusterMapping(example)
     result.foreach(println)
