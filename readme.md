@@ -49,3 +49,35 @@ Ex
     Example: ([1-1], ((name, Set(aaa, bbb, ccc)), (givenname, Set(aaa, bbb, ddd))))   
     Similarity = (name, (givenname, 0.5))
 
+**Job-3: Bestmatch**
+- Create (a, (b, similarity-of-a-b)) =>(b, (a, similarity-of-a-b)) for all result of sim 
+- Join all same predicate, choose maximum similarity.
+
+**Job-4: Blocking**
+
+- Create clusters from predicates.
+
+    For example, best match pairs:
+    a-b
+    b-c
+    c-b
+    m-n
+    n-m
+    
+    => (a,b,c), (m,n) is clusters
+
+- Create Block by token for per cluster.
+- Find duplicate by Jaccard similarity.
+  
+  For example:
+    
+    e1: block1, block2, block3
+    
+    e2: block1, block2, block4
+    
+    e1.match(e2) = 0.5 => duplicate
+ 
+- Remove duplicates (kept 1 for each duplicate)
+- Save data to dataframe by SparkSql, then save to parquet format.
+
+(https://spark.apache.org/docs/latest/sql-data-sources-parquet.html -> use this docs to read and write parquet dataframe)

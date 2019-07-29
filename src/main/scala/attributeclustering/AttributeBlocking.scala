@@ -11,7 +11,7 @@ object AttributeBlocking {
   def getTokensBlock(predicates: List[(String, String)], clusters: Map[String, String]): Set[String] = {
     var blocking: Set[String] = Set()
     for(predicate: (String, String) <- predicates) {
-      val cluster = clusters(predicate._1)
+      val cluster = clusters getOrElse (predicate._1, predicate._1)
       val tokens = predicate._2.split(" ")
       for(token <- tokens) {
         blocking = blocking ++ Set(cluster + "_" + token)
@@ -47,7 +47,9 @@ object AttributeBlocking {
   def run(): Unit = {
     val maximumAttributeMatch: RDD[(String, String)] = BestMatch.run()
 
+
     val clusters: Map[String, String] = clusterMapping(maximumAttributeMatch.collect().toList)
+//    println(clusters)
 
     val concatenationEntities = AttributeCreation.concatenationEntities.groupBy(_._1)
                                                                        .map(p => (p._1,p._2.map(_._2)))
@@ -55,6 +57,11 @@ object AttributeBlocking {
     val token_blocking: RDD[(Int, (String, Set[String]))] = concatenationEntities.map{case(key, value) =>
       (key, getTokensBlock(value.toList, clusters))
     }.map(p => (0, p))
+    val numberBlocks = token_blocking.flatMap({case(p,v) => v._2.toList})
+                                    .map(k => (k, 1))
+                                    .reduceByKey{case(x,y) => x+y}
+                                    .filter(_._2 > 0)
+                                    .collect().length
 
     val duplicates = token_blocking.join(token_blocking).filter{case (_, (x, y)) => x._1 < y._1}
                                        .map({case(k, v) => {
@@ -66,7 +73,7 @@ object AttributeBlocking {
                                        .collect().toList
 
     val duplicateCluster = clusterMapping(duplicates)
-    val numberDuplicate = duplicateCluster.size  // use this number to know how many duplicate in dataset
+    val numberDuplicates = duplicateCluster.size  // use this number to know how many duplicate in dataset
     val keppingDuplicate: Set[String] = getKeepingEntity(duplicateCluster)
 
     val newDataset = AttributeCreation.concatenationEntities.filter({case(k,v) => !(duplicateCluster contains k) ||
@@ -74,7 +81,15 @@ object AttributeBlocking {
                                                                    })
                                                             .map({case(k,v) => (k, v._1, v._2)})
 
+
     val dfWithoutSchema = spark.createDataFrame(newDataset)
+    println("Total number blocks: ", numberBlocks)
+    println("Total duplicate: ", numberDuplicates)
+    dfWithoutSchema.show(100)
+
+    /* Fix-me: Remember removing ouput file before run
+     * It is in my .sh script
+    */
     dfWithoutSchema.write.parquet(outputPath)
 
   }
