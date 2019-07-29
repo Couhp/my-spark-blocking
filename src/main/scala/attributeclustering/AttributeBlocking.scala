@@ -60,7 +60,7 @@ object AttributeBlocking {
     val numberBlocks = token_blocking.flatMap({case(p,v) => v._2.toList})
                                     .map(k => (k, 1))
                                     .reduceByKey{case(x,y) => x+y}
-                                    .filter(_._2 > 0)
+                                    .filter(_._2 > 1)
                                     .collect().length
 
     val duplicates = token_blocking.join(token_blocking).filter{case (_, (x, y)) => x._1 < y._1}
